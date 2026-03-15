@@ -1,0 +1,28 @@
+name: 股票分析自动运行
+
+on:
+  schedule:
+    - cron: '0 18 * * *'  # 每天18:00自动跑一次
+  workflow_dispatch: {}    # 支持手动一键触发
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: 设置Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.13'
+      - name: 安装依赖
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: 运行分析
+        run: |
+          python main.py --stocks 600519 --no-notify
+      - name: 保存报告
+        uses: actions/upload-artifact@v3
+        with:
+          name: 分析报告
+          path: ./reports
